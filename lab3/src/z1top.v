@@ -9,6 +9,6 @@ module z1top (
     output aud_sd
 );
     // TODO(you): Your code here. Remove the following lines once you add your implementation.
-    assign LEDS[5:0] = 6'b111111;
-    assign aud_sd = 0;
+    assign aud_sd = 1;
+    tone_generator dut(.clk(CLK_125MHZ_FPGA), .square_wave_out(aud_pwm), .tone_switch_period(24'd284091), .output_enable(1'b1));
 endmodule
