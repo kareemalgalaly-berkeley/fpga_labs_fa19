@@ -13,7 +13,7 @@ module tone_generator (
     assign square_wave_out = pwm_out;
     assign _counter = counter;
 
-    if (counter = 32'h0000_0000) begin
+    if (counter == 32'h0000_0000) begin
         counter = tone_switch_period;
     end
 
