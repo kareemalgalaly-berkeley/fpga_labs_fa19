@@ -110,8 +110,8 @@ VL_INLINE_OPT void Vtone_generator::_sequent__TOP__1(Vtone_generator__Syms* __re
 						   - VL_ULL(1)));
     }
     vlTOPp->tone_generator__DOT__counter = __Vdly__tone_generator__DOT__counter;
-    vlTOPp->square_wave_out = vlTOPp->tone_generator__DOT__pwm_out;
     vlTOPp->_counter = vlTOPp->tone_generator__DOT__counter;
+    vlTOPp->square_wave_out = vlTOPp->tone_generator__DOT__pwm_out;
 }
 
 void Vtone_generator::_initial__TOP__2(Vtone_generator__Syms* __restrict vlSymsp) {
@@ -120,14 +120,16 @@ void Vtone_generator::_initial__TOP__2(Vtone_generator__Syms* __restrict vlSymsp
     // Body
     // INITIAL at tone_generator.v:10
     vlTOPp->tone_generator__DOT__counter = VL_ULL(1);
+    // INITIAL at tone_generator.v:11
+    vlTOPp->tone_generator__DOT__pwm_out = 0U;
 }
 
 void Vtone_generator::_settle__TOP__3(Vtone_generator__Syms* __restrict vlSymsp) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtone_generator::_settle__TOP__3\n"); );
     Vtone_generator* __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     // Body
-    vlTOPp->square_wave_out = vlTOPp->tone_generator__DOT__pwm_out;
     vlTOPp->_counter = vlTOPp->tone_generator__DOT__counter;
+    vlTOPp->square_wave_out = vlTOPp->tone_generator__DOT__pwm_out;
 }
 
 void Vtone_generator::_eval(Vtone_generator__Syms* __restrict vlSymsp) {

@@ -29,10 +29,7 @@ void Vtone_generator::traceChgThis(Vtone_generator__Syms* __restrict vlSymsp, Ve
 				  >> 1U))))) {
 	    vlTOPp->traceChgThis__2(vlSymsp, vcdp, code);
 	}
-	if (VL_UNLIKELY((2U & vlTOPp->__Vm_traceActivity))) {
-	    vlTOPp->traceChgThis__3(vlSymsp, vcdp, code);
-	}
-	vlTOPp->traceChgThis__4(vlSymsp, vcdp, code);
+	vlTOPp->traceChgThis__3(vlSymsp, vcdp, code);
     }
     // Final
     vlTOPp->__Vm_traceActivity = 0U;
@@ -45,20 +42,11 @@ void Vtone_generator::traceChgThis__2(Vtone_generator__Syms* __restrict vlSymsp,
     // Body
     {
 	vcdp->chgQuad(c+1,(vlTOPp->tone_generator__DOT__counter),33);
-    }
-}
-
-void Vtone_generator::traceChgThis__3(Vtone_generator__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, uint32_t code) {
-    Vtone_generator* __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
-    int c=code;
-    if (0 && vcdp && c) {}  // Prevent unused
-    // Body
-    {
 	vcdp->chgBit(c+3,(vlTOPp->tone_generator__DOT__pwm_out));
     }
 }
 
-void Vtone_generator::traceChgThis__4(Vtone_generator__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, uint32_t code) {
+void Vtone_generator::traceChgThis__3(Vtone_generator__Syms* __restrict vlSymsp, VerilatedVcd* vcdp, uint32_t code) {
     Vtone_generator* __restrict vlTOPp VL_ATTR_UNUSED = vlSymsp->TOPp;
     int c=code;
     if (0 && vcdp && c) {}  // Prevent unused
