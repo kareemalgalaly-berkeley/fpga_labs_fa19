@@ -11,4 +11,5 @@ module z1top (
     // TODO(you): Your code here. Remove the following lines once you add your implementation.
     assign aud_sd = 1;
     tone_generator dut(.clk(CLK_125MHZ_FPGA), .square_wave_out(aud_pwm), .tone_switch_period(24'd284091), .output_enable(1'b1));
+    //tone_generator dut(.clk(CLK_125MHZ_FPGA), .square_wave_out(aud_pwm), .tone_switch_period(24'd284091), .output_enable(1'b1));
 endmodule

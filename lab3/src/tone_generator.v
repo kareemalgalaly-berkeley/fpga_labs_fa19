@@ -15,10 +15,15 @@ module tone_generator (
 
     always @(posedge clk or negedge clk) begin
         //if (counter == tone_switch_period) begin
-        if (counter == 32'h0000_0001) begin
-            pwm_out <= ~pwm_out;
+        if (counter <= 32'h0000_0001) begin
+            if (output_enable == 1'b1) begin
+                pwm_out <= ~pwm_out;
+            end else begin
+                pwm_out <= 0;
+            end
+            //A
             //counter <= 32'h0000_0001;
-            counter <= tone_switch_period;
+            counter[23:0] <= tone_switch_period;
             //counter <= 284091;
         end else begin
             //counter <= counter + 1;
