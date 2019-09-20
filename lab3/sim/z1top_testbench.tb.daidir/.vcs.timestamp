@@ -40,10 +40,10 @@ z1top_testbench.v
 sysc_uni_pwd=/home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/sim
 XMODIFIERS=@im=none
 XILINXD_LICENSE_FILE=2100@license-srv.eecs.berkeley.edu
-XDG_VTNR=1
+XDG_VTNR=3
 XDG_SESSION_TYPE=x11
-XDG_SESSION_PATH=/org/freedesktop/DisplayManager/Session6
-XDG_SESSION_ID=1096
+XDG_SESSION_PATH=/org/freedesktop/DisplayManager/Session2
+XDG_SESSION_ID=470
 XDG_SESSION_DESKTOP=mate
 XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0
 XDG_SEAT=seat0
@@ -63,10 +63,10 @@ VCS_ARCH=amd64
 UNAME=/bin/uname
 TOOL_HOME=/share/instsww/synopsys/G-2012.09/amd64
 SYNOPSYS_ROOT=/home/ff/cs250/tools/synopsys
-SSH_AUTH_SOCK=/home/cc/eecs151/fa19/class/eecs151-acn/.cache/keyring-PHPB8Z/ssh
-SSH_AGENT_PID=14229
+SSH_AUTH_SOCK=/home/cc/eecs151/fa19/class/eecs151-acn/.cache/keyring-AHAL8Z/ssh
+SSH_AGENT_PID=5242
 SNPSLMD_LICENSE_FILE=27005@license-srv.eecs.berkeley.edu:/share/instsww/synopsys/G-2012.09/flexlm//license.dat
-SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/14073,unix/unix:/tmp/.ICE-unix/14073
+SESSION_MANAGER=local/unix:@/tmp/.ICE-unix/5087,unix/unix:/tmp/.ICE-unix/5087
 SERIALTTY=/dev/ttyUSB0
 SCRNAME=vcs
 SCRIPT_NAME=vcs
@@ -92,14 +92,14 @@ LC_ALL=C
 INSTMANPATH=/usr/local/man:/usr/sww/man:/usr/man:/usr/share/man:/usr/java/man:/share/b/grading/man:/home/aa/projects/scheme/lib/man
 IMSETTINGS_MODULE=none
 IMSETTINGS_INTEGRATE_DESKTOP=yes
-HOSTNAME=c125m-17.EECS.Berkeley.EDU
+HOSTNAME=c125m-1.EECS.Berkeley.EDU
 HISTCONTROL=ignoredups
 GTK_OVERLAY_SCROLLING=0
 GTK_IM_MODULE=gtk-im-context-simple
-GNOME_KEYRING_CONTROL=/home/cc/eecs151/fa19/class/eecs151-acn/.cache/keyring-PHPB8Z
+GNOME_KEYRING_CONTROL=/home/cc/eecs151/fa19/class/eecs151-acn/.cache/keyring-AHAL8Z
 GDMSESSION=mate
 DESKTOP_SESSION=mate
-DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-gAt0YS2jkH,guid=5f686e714105c2ca298805215d847190
+DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-I9MuXHJqvK,guid=9a8d6545af5979785dce88dd5d85449b
 CVS_RSH=ssh
 CONFIG_SHELL=/usr/bin/ksh
 COLORTERM=truecolor
@@ -109,7 +109,7 @@ AGILEESOFD_LICENSE_FILE=27000@license-srv.eecs.berkeley.edu
 ADS_LICENSE_FILE=27000@license-srv.eecs.berkeley.edu
 0
 4
-1568964649 z1top_testbench.v
+1569017201 z1top_testbench.v
 1568964008 /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/z1top.v
 1568963154 /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/tone_generator.v
 1345792088 /share/instsww/synopsys/G-2012.09/amd64/lib/vcsdp.tab
@@ -118,4 +118,4 @@ ADS_LICENSE_FILE=27000@license-srv.eecs.berkeley.edu
 1345792743 /share/instsww/synopsys/G-2012.09/amd64/lib/libvirsim.so
 1345792505 /share/instsww/synopsys/G-2012.09/amd64/lib/liberrorinf.so
 1345792224 /share/instsww/synopsys/G-2012.09/amd64/lib/libsnpsmalloc.so
-1568964653 z1top_testbench.tb.daidir
+1569017214 z1top_testbench.tb.daidir
