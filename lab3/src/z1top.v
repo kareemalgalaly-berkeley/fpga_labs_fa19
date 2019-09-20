@@ -8,8 +8,9 @@ module z1top (
     output aud_pwm,
     output aud_sd
 );
-    // TODO(you): Your code here. Remove the following lines once you add your implementation.
+    wire [31:0] counter;
+
     assign aud_sd = 1;
-    tone_generator dut(.clk(CLK_125MHZ_FPGA), .square_wave_out(aud_pwm), .tone_switch_period(24'd284091), .output_enable(1'b1));
-    //tone_generator dut(.clk(CLK_125MHZ_FPGA), .square_wave_out(aud_pwm), .tone_switch_period(24'd284091), .output_enable(1'b1));
+
+    tone_generator dut(.clk(CLK_125MHZ_FPGA), .square_wave_out(aud_pwm), .tone_switch_period(BUTTONS[3:0] << 16), .output_enable(SWITCHES[0]), .volume(SWITCHES[1]), ._counter(counter));
 endmodule

@@ -5,21 +5,22 @@ module tone_generator (
     input [23:0] tone_switch_period,
     input volume,
     output square_wave_out,
-    output [32:0] _counter
+    output [31:0] _counter
 );
-    reg [32:0] counter = 32'h0000_0001; // true min is 20 for the default settings
+    reg [31:0] counter = 32'h0000_0001; // true min is 20 for the default settings
+    reg square_out = 0;
     reg pwm_out = 0;
 
-    assign square_wave_out = pwm_out;
+    assign square_wave_out = square_out && pwm_out;
     assign _counter = counter;
 
-    always @(posedge clk or negedge clk) begin
-        //if (counter == tone_switch_period) begin
+    always @(posedge clk) begin
+        // square wave generator
         if (counter <= 32'h0000_0001) begin
             if (output_enable == 1'b1) begin
-                pwm_out <= ~pwm_out;
+                square_out <= ~square_out;
             end else begin
-                pwm_out <= 0;
+                square_out <= 0;
             end
             //A
             //counter <= 32'h0000_0001;
@@ -28,6 +29,12 @@ module tone_generator (
         end else begin
             //counter <= counter + 1;
             counter <= counter - 1;
+        end
+        // volume duty cycle
+        if (volume == 1) begin
+            pwm_out <= counter[2];
+        end else begin
+            pwm_out <= counter[2] && counter[1];
         end
     end
 endmodule

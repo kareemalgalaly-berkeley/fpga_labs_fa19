@@ -12,7 +12,7 @@ module z1top_testbench();
     wire aud_pwm, aud_sd, speaker;
     wire [5:0] leds;
     reg [3:0] buttons = 4'h0;
-    reg [1:0] switches = 2'b00;
+    reg [1:0] switches = 2'b11;
     assign speaker = aud_pwm & aud_sd;
 
     z1top top (
@@ -29,7 +29,18 @@ module z1top_testbench();
             $dumpfile("z1top_testbench.fst");
             $dumpvars(0,z1top_testbench);
         `endif
-
+        repeat (10) begin
+            buttons <= 4'b0001;
+            #(500);       
+            buttons <= 4'b0011;
+            #(500);       
+            buttons <= 4'b0111;
+            #(500);       
+            buttons <= 4'b0001;
+            #(250);       
+            buttons <= 4'b1001;
+            #(500);
+        end
         #(200 * `MS);
         $finish();
     end

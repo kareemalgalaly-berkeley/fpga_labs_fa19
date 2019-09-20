@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<opml version="1.0">
+	<head>
+		<title>VCS dump file for DVE debugging</title>
+		<vcsVersion>G-2012.09_Full64</vcsVersion>
+		<dateCreated>Fri Sep 20 00:30:52 2019</dateCreated>
+	</head>
+	<body>
+		<!-- VCS compile options -->
+		<vcsCompileOptions text="/share/instsww/synopsys/G-2012.09/amd64/bin/vcs1 -Mcc=gcc -Mcplusplus=g++ -Masflags= -Mcfl= -pipe -O -I/share/instsww/synopsys/G-2012.09/include  -Mldflags=  -Mout=z1top_testbench.tb -Mamsrun= -Mvcsaceobjs= -Mobjects= /share/instsww/synopsys/G-2012.09/amd64/lib/libvirsim.so /share/instsww/synopsys/G-2012.09/amd64/lib/liberrorinf.so /share/instsww/synopsys/G-2012.09/amd64/lib/libsnpsmalloc.so  -Msaverestoreobj=/share/instsww/synopsys/G-2012.09/amd64/lib/vcs_save_restore_new.o -Mcrt0= -Mcrtn= -Mcsrc= -Msyslibs=-ldl -lm  -full64 -Xnotice -pp_used +vcsd +itf+/share/instsww/synopsys/G-2012.09/amd64/lib/vcsdp.tab -line +lint=all,noVCDE +v2k -timescale=1ns/10ps -Xcbug=0x1 -o z1top_testbench.tb -top z1top_testbench +cli+4 -debug=4 +memcbk +vpi -gen_obj /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/tone_generator.v /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/z1top.v z1top_testbench.v "/>
+		<!-- File list for the whole design -->
+		<fileList>
+			<file fid="0" path="/home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/tone_generator.v" />
+			<file fid="1" path="/home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/sim/z1top_testbench.v" />
+			<file fid="2" path="/home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/z1top.v" />
+		</fileList>
+		<!-- Include file list for the whole design -->
+		<includeFileList>
+		</includeFileList>
+		<!-- Encrypted codes list for the whole design -->
+		<encryptedCodesList>
+		</encryptedCodesList>
+		<!-- Inactive codes list for the whole design -->
+		<inactiveCodesList>
+			<inactiveCodes fid="1" lineno="29:30" />
+		</inactiveCodesList>
+		<!-- Compile options UUM based -->
+		<langKeywords>
+			<v2kFiles fid="0-2" />
+		</langKeywords>
+		<!--  Case insensitive file list -->
+		<caseInsensitiveFiles fid="" />
+		<!-- Macro definition list for the whole design --> 
+		<macroDefinitionList>
+			<macro name="MS" module="z1top_testbench" sourceID="1" lineno="44" defID="1" defLine="4" value="1"  vip="false"/>
+			<macro name="CLOCKS_PER_SAMPLE" module="z1top_testbench" sourceID="1" lineno="58" defID="1" defLine="5" value="2"  vip="false"/>
+		</macroDefinitionList>
+		<!-- Macro value list for the whole design --> 
+		<macroValueList>
+			<mv i="1" n="1000000" />
+			<mv i="2" n="2500 " />
+		</macroValueList>
+	</body>
+</opml>
