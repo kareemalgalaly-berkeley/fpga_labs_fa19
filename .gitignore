@@ -10,4 +10,7 @@
 *.jou
 *.str
 *.toc
+*.nfs*
+*daidir*
+*csrc*
 build
