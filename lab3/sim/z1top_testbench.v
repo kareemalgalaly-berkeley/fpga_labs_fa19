@@ -29,18 +29,9 @@ module z1top_testbench();
             $dumpfile("z1top_testbench.fst");
             $dumpvars(0,z1top_testbench);
         `endif
-        repeat (10) begin
-            buttons <= 4'b0001;
-            #(500);       
-            buttons <= 4'b0011;
-            #(500);       
-            buttons <= 4'b0111;
-            #(500);       
-            buttons <= 4'b0001;
-            #(250);       
-            buttons <= 4'b1001;
-            #(500);
-        end
+        switches <= 2'b11;
+        #(200 * `MS);
+        switches <= 2'b01;
         #(200 * `MS);
         $finish();
     end

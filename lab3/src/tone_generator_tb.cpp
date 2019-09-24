@@ -2,7 +2,6 @@
 #include "Vtone_generator.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-//#include "verilated_vcd_c.h"
 
 //#define TONE_SWITCH_PERIOD 284091
 #define TONE_SWITCH_PERIOD 5
