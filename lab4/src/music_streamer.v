@@ -12,7 +12,7 @@ module music_streamer (
     reg [22:0] counter = 0;
 
     // ROM 
-    wire [9:0] rom_addr;
+    reg [9:0] rom_addr = 0;
     wire [23:0] rom_data;
     wire [9:0] rom_ladd;
     rom musicrom(.address(rom_addr), .data(rom_data), .last_address(rom_ladd));
@@ -22,6 +22,7 @@ module music_streamer (
         if (counter >= 23'd5_000_000) begin
             counter <= 0;
             tone <= rom_data;
+            rom_addr <= rom_addr + 1;
         end
         else counter <= counter + 1;
     end

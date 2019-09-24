@@ -12,9 +12,35 @@ module z1top (
 );
     assign LEDS[5:4] = 2'b11;
     assign aud_sd = 1; // Enable the audio output
-    assign aud_pwm = 0;
+    //assign aud_pwm = 0;
 
     //// TODO: Instantiate the tone_generator and music_streamer here
+    reg tempo_up = 0;
+    reg tempo_down = 0;
+    reg play_pause = 0;
+    reg reverse = 0;
+    reg reset = 0;
+    wire [23:0] tone_to_play;
+
+    tone_generator tg (
+        .clk(CLK_125MHZ_FPGA),
+        .rst(reset),
+        .output_enable(SWITCHES[0]),
+        .volume(SWITCHES[1]),
+        .tone_switch_period(tone_to_play),
+        .square_wave_out(aud_pwm)
+    );
+
+    music_streamer streamer (
+        .clk(CLK_125MHZ_FPGA),
+        .rst(reset),
+        .tempo_up(tempo_up),
+        .tempo_down(tempo_down),
+        .play_pause(play_pause),
+        .reverse(reverse),
+        .leds(LEDS[2:0]),
+        .tone(tone_to_play)
+    );
 
     //// Button parser test circuit
     /* verilator lint_off REALCVT */
