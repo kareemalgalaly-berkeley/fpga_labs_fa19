@@ -6,7 +6,7 @@ module music_streamer (
     input play_pause,
     input reverse,
     output [2:0] leds,
-    output reg [23:0] tone
+    output reg [23:0] tone = 0
 );
     // Instantiations
     reg [22:0] counter = 0;
