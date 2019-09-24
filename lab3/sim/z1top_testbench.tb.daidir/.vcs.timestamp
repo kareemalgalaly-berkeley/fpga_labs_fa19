@@ -109,7 +109,7 @@ AGILEESOFD_LICENSE_FILE=27000@license-srv.eecs.berkeley.edu
 ADS_LICENSE_FILE=27000@license-srv.eecs.berkeley.edu
 0
 4
-1569017201 z1top_testbench.v
+1569023496 z1top_testbench.v
 1568964008 /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/z1top.v
 1568963154 /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/src/tone_generator.v
 1345792088 /share/instsww/synopsys/G-2012.09/amd64/lib/vcsdp.tab
@@ -118,4 +118,4 @@ ADS_LICENSE_FILE=27000@license-srv.eecs.berkeley.edu
 1345792743 /share/instsww/synopsys/G-2012.09/amd64/lib/libvirsim.so
 1345792505 /share/instsww/synopsys/G-2012.09/amd64/lib/liberrorinf.so
 1345792224 /share/instsww/synopsys/G-2012.09/amd64/lib/libsnpsmalloc.so
-1569017214 z1top_testbench.tb.daidir
+1569023501 z1top_testbench.tb.daidir

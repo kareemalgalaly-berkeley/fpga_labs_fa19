@@ -1,15 +1,15 @@
 # Begin_DVE_Session_Save_Info
 # DVE reload session
-# Saved on Fri Sep 20 15:04:22 2019
+# Saved on Fri Sep 20 16:52:03 2019
 # Designs open: 1
 #   V1: /home/cc/eecs151/fa19/class/eecs151-acn/fpga_labs_fa19/lab3/sim/z1top_testbench.vpd
 # Toplevel windows open: 2
 # 	TopLevel.1
 # 	TopLevel.2
 #   Source.1: z1top_testbench
-#   Wave.1: 10 signals
+#   Wave.1: 7 signals
 #   Group count = 1
-#   Group z1top_testbench signal count = 10
+#   Group top signal count = 7
 # End_DVE_Session_Save_Info
 
 # DVE version: G-2012.09
@@ -66,7 +66,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 
 # MDI window settings
 set Wave.1 Wave.1
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 276} {child_wave_right 1638} {child_wave_colname 140} {child_wave_colvalue 132} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 273} {child_wave_right 1641} {child_wave_colname 182} {child_wave_colvalue 87} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -96,20 +96,14 @@ gui_set_time_units 1ns
 # Global: Signal Compare
 
 # Global: Signal Groups
-gui_load_child_values {z1top_testbench}
+gui_load_child_values {z1top_testbench.top}
 
 
-set _session_group_1 z1top_testbench
+set _session_group_1 top
 gui_sg_create "$_session_group_1"
-set z1top_testbench "$_session_group_1"
+set top "$_session_group_1"
 
-gui_sg_addsignal -group "$_session_group_1" { z1top_testbench.file z1top_testbench.clock z1top_testbench.speaker z1top_testbench.aud_sd z1top_testbench.i z1top_testbench.buttons z1top_testbench.aud_pwm z1top_testbench.switches z1top_testbench.leds z1top_testbench.count }
-gui_set_radix -radix {decimal} -signals {V1:z1top_testbench.file}
-gui_set_radix -radix {twosComplement} -signals {V1:z1top_testbench.file}
-gui_set_radix -radix {decimal} -signals {V1:z1top_testbench.i}
-gui_set_radix -radix {twosComplement} -signals {V1:z1top_testbench.i}
-gui_set_radix -radix {decimal} -signals {V1:z1top_testbench.count}
-gui_set_radix -radix {twosComplement} -signals {V1:z1top_testbench.count}
+gui_sg_addsignal -group "$_session_group_1" { z1top_testbench.top.aud_pwm z1top_testbench.top.CLK_125MHZ_FPGA z1top_testbench.top.BUTTONS z1top_testbench.top.SWITCHES z1top_testbench.top.LEDS z1top_testbench.top.aud_sd z1top_testbench.top.counter }
 
 # Global: Highlighting
 
@@ -119,7 +113,7 @@ gui_change_stack_mode -mode list
 # Post database loading setting...
 
 # Restore C1 time
-gui_set_time -C1_only 5242902
+gui_set_time -C1_only 250000000
 
 
 
@@ -143,14 +137,17 @@ gui_show_window -window ${Hier.1}
 gui_list_set_filter -id ${Hier.1} -list { {Package 1} {All 0} {Process 1} {UnnamedProcess 1} {Function 1} {Block 1} {OVA Unit 1} {LeafScCell 1} {LeafVlgCell 1} {Interface 1} {PowSwitch 0} {LeafVhdCell 1} {$unit 1} {NamedBlock 1} {Task 1} {VlgPackage 1} {IsoCell 0} {ClassDef 1} }
 gui_list_set_filter -id ${Hier.1} -text {*} -force
 gui_change_design -id ${Hier.1} -design V1
-catch {gui_list_select -id ${Hier.1} {z1top_testbench}}
+catch {gui_list_expand -id ${Hier.1} z1top_testbench}
+catch {gui_list_select -id ${Hier.1} {z1top_testbench.top}}
 gui_view_scroll -id ${Hier.1} -vertical -set 0
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
 
 # Data 'Data.1'
 gui_list_set_filter -id ${Data.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {LowPower 1} {Parameter 1} {All 1} {Aggregate 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Data.1} -text {*}
-gui_list_show_data -id ${Data.1} {z1top_testbench}
+gui_list_show_data -id ${Data.1} {z1top_testbench.top}
+gui_show_window -window ${Data.1}
+catch { gui_list_select -id ${Data.1} {z1top_testbench.top.aud_pwm }}
 gui_view_scroll -id ${Data.1} -vertical -set 0
 gui_view_scroll -id ${Data.1} -horizontal -set 0
 gui_view_scroll -id ${Hier.1} -vertical -set 0
@@ -171,9 +168,9 @@ set origWaveHeight [gui_get_pref_value -category Wave -key waveRowHeight]
 gui_list_set_height -id Wave -height 25
 set origGroupCreationState [gui_list_create_group_when_add -wave]
 gui_list_create_group_when_add -wave -disable
-gui_wv_zoom_timerange -id ${Wave.1} 5242593 5243744
-gui_list_add_group -id ${Wave.1} -after {New Group} {z1top_testbench}
-gui_list_expand -id ${Wave.1} z1top_testbench.switches
+gui_wv_zoom_timerange -id ${Wave.1} 0 2214592513
+gui_list_add_group -id ${Wave.1} -after {New Group} {top}
+gui_list_expand -id ${Wave.1} z1top_testbench.top.SWITCHES
 gui_seek_criteria -id ${Wave.1} {Any Edge}
 
 
@@ -189,9 +186,9 @@ if { $groupExD } {
 }
 gui_list_set_filter -id ${Wave.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {Parameter 1} {All 1} {Aggregate 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Wave.1} -text {*}
-gui_list_set_insertion_bar  -id ${Wave.1} -group z1top_testbench  -position in
+gui_list_set_insertion_bar  -id ${Wave.1} -group top  -position in
 
-gui_marker_move -id ${Wave.1} {C1} 5242902
+gui_marker_move -id ${Wave.1} {C1} 250000000
 gui_view_scroll -id ${Wave.1} -vertical -set 0
 gui_show_grid -id ${Wave.1} -enable false
 # Restore toplevel window zorder
@@ -199,7 +196,6 @@ gui_show_grid -id ${Wave.1} -enable false
 if {[gui_exist_window -window ${TopLevel.1}]} {
 	gui_set_active_window -window ${TopLevel.1}
 	gui_set_active_window -window ${Source.1}
-	gui_set_active_window -window ${HSPane.1}
 }
 if {[gui_exist_window -window ${TopLevel.2}]} {
 	gui_set_active_window -window ${TopLevel.2}
