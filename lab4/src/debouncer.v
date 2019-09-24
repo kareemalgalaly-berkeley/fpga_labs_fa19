@@ -7,7 +7,7 @@ module debouncer #(
 (
     input clk,
     input [width-1:0] glitchy_signal,
-    output [width-1:0] debounced_signal
+    output reg [width-1:0] debounced_signal = 0
 );
     // Create your debouncer circuit
     // The debouncer takes in a bus of 1-bit synchronized, but glitchy signals
@@ -15,10 +15,9 @@ module debouncer #(
 
     // Sample Pulse Generator
     reg sample_pulse;
-    
-    sample_pulse = 0;
     reg [wrapping_counter_width-1:0] sample_count = 0;
     always @(posedge clk) begin
+        sample_pulse = 0;
         if (sample_count == sample_count_max) begin
             sample_pulse = 1;
             sample_count <= 0;
@@ -26,12 +25,23 @@ module debouncer #(
     end
 
     // Saturating Counter
-    reg [saturating_counter_width-1:0] pulse_count [width-1:0];
+    //wire [saturating_counter_width-1:0] pulse_count_out [width-1:0];
+    //wire [saturating_counter_width-1:0] pulse_count_in [width-1:0];
+
     genvar i;
     generate
-    for (i = 0; i < width; i = i+1) begin: LOOP
-        always @(posedge clk) begin
-            if (glitchy_signal[i] and sample_pulse):
-                // stuff
+        for (i = 0; i < width; i = i+1) begin: LOOP
+            reg [saturating_counter_width:0] pulse_count = 0;
+            always @(posedge clk) begin
+                debounced_signal[i] = 0;
+                if (pulse_count == pulse_count_max && glitchy_signal[i]) begin
+                    debounced_signal[i] = 1;
+                end else begin 
+                    if (glitchy_signal[i]) pulse_count <= (pulse_count + 1);
+                    else pulse_count <= 0;
+                end
+            end
+        end
+    endgenerate
 
 endmodule

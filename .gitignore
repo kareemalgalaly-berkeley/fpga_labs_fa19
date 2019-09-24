@@ -13,4 +13,5 @@
 *.nfs*
 *daidir*
 *csrc*
+DVEfiles*
 build
