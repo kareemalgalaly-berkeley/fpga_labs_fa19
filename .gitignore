@@ -1,5 +1,6 @@
 *.aux
 *.swp
+*.fuse*
 *.log
 *.out
 *_minted*
