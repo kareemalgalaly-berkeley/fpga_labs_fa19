@@ -25,20 +25,21 @@ module debouncer #(
     end
 
     // Saturating Counter
-    //wire [saturating_counter_width-1:0] pulse_count_out [width-1:0];
+    wire [saturating_counter_width-1:0] pulse_count_out [width-1:0];
     //wire [saturating_counter_width-1:0] pulse_count_in [width-1:0];
 
     genvar i;
     generate
         for (i = 0; i < width; i = i+1) begin: LOOP
             reg [saturating_counter_width:0] pulse_count = 0;
+            assign pulse_count_out[i] = pulse_count;
             always @(posedge clk) begin
-                debounced_signal[i] = 0;
-                if (pulse_count == pulse_count_max && glitchy_signal[i]) begin
-                    debounced_signal[i] = 1;
-                end else begin 
-                    if (glitchy_signal[i]) pulse_count <= (pulse_count + 1);
-                    else pulse_count <= 0;
+                if (glitchy_signal[i] == 0) begin pulse_count <= 2; debounced_signal[i] <= 0; end //rst
+                else begin
+                    if (sample_pulse) begin
+                        if (pulse_count >= pulse_count_max) debounced_signal[i] <= 1;
+                        else pulse_count <= pulse_count + 1;
+                    end
                 end
             end
         end

@@ -75,6 +75,12 @@ module debouncer_testbench();
         //   long enough for the counter to saturate, that the output goes high and stays there until the glitchy_signal falls
         fork
             begin
+                repeat(100) begin 
+                    #(10); 
+                    $display("%d %d %d", glitchy_signal[1], debounced_signal[1], DUT.pulse_count_out[1]); 
+                end
+            end
+            begin
                 // Initially act glitchy
                 repeat (10) begin
                     glitchy_signal[1] = ~glitchy_signal[1];
