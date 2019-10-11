@@ -8,5 +8,10 @@ module edge_detector #(
     // The edge detector takes a bus of 1-bit signals and looks for a low to high (0 -> 1)
     // logic transition. It outputs a 1 clock cycle wide pulse if a transition is detected.
     // Remove this line once you have implemented this module.
-    assign edge_detect_pulse = 0;
+    reg s1, s2;
+    assign edge_detect_pulse = s2 & !s1;
+    always @(posedge clk) begin
+        s1 <= signal_in;
+        s2 <= s1;
+    end
 endmodule

@@ -20,3 +20,4 @@ build
 *.vpd
 *.tb
 output.txt
+*.cloud
