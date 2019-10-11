@@ -20,7 +20,7 @@
 
 srcdir  = .
 
-main = lab5_spec
+main = lab6_spec
 srcs = $(wildcard *.tex)
 figs = $(wildcard figs/*)
 bibs =
@@ -46,7 +46,7 @@ ifneq ($(strip $(bibs)),)
 endif
 	texfot pdflatex -shell-escape $(main)
 
-junk += $(output_pdf) *.aux *.log *.out *.fls *.fdb_latexmk _minted-lab3_spec
+junk += $(output_pdf) *.aux *.log *.out *.fls *.fdb_latexmk _minted-*
 
 #------------------------------------------------------------
 # Other Targets

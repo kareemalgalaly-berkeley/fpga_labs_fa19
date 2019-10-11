@@ -15,3 +15,8 @@
 *csrc*
 DVEfiles*
 build
+*.fst
+*.tbi
+*.vpd
+*.tb
+output.txt
