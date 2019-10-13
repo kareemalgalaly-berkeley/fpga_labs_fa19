@@ -31,7 +31,7 @@ module tone_generator_testbench();
         `endif
 
         tone_to_play = 24'd0;
-        output_enable = 1'b0;
+        output_enable = 1'b1;
         #(10 * `MS);
         output_enable = 1'b1;
 

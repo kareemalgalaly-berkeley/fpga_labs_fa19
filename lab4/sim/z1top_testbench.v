@@ -1,6 +1,7 @@
 `timescale 1ns/1ns
 
 `define SECOND 1000000000
+`define TICK 2048
 `define MS 1000000
 `define CLOCKS_PER_SAMPLE 2500 // 125 Mhz clock, 50 kHz audio, 2500 clocks per sample
 
@@ -30,7 +31,7 @@ module z1top_testbench();
             $dumpvars(0,z1top_testbench);
         `endif
 
-        #(200 * `MS);
+        #(1000 * `MS);
         $finish();
     end
 
@@ -53,6 +54,34 @@ module z1top_testbench();
         `ifndef IVERILOG
             $vcdplusoff;
         `endif
+    end
+
+    initial begin
+        repeat (4) begin 
+            buttons <= 4'b1111;
+            #(500 * `MS);
+            buttons <= 4'h0;
+            #(`TICK);
+        end
+        repeat (4) begin 
+            buttons <= 4'h2;
+            #(`TICK);
+            buttons <= 4'h0;
+            #(`TICK);
+        end
+        repeat (4) begin 
+            buttons <= 4'h3;
+            #(`TICK);
+            buttons <= 4'h0;
+            #(`TICK);
+        end
+        repeat (4) begin 
+            buttons <= 4'h1;
+            #(`TICK);
+            buttons <= 4'h0;
+            #(`TICK);
+        end
+
     end
 
 endmodule

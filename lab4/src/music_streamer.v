@@ -10,6 +10,7 @@ module music_streamer (
 );
     // Instantiations
     reg [22:0] counter = 0;
+    reg [22:0] max_counter = 23'd5_000_000;
 
     // ROM 
     reg [9:0] rom_addr = 0;
@@ -19,11 +20,19 @@ module music_streamer (
 
     // main
     always @(posedge clk) begin
-        if (counter >= 23'd5_000_000) begin
-            counter <= 0;
+        if (rst) begin
+            counter = 0;
+            rom_addr = 0;
+            max_counter = 23'd5_000_000;
+        end
+        if (tempo_up) max_counter = max_counter + 23'd500_000;
+        if (tempo_down) max_counter = max_counter - 23'd500_000;
+
+        if (counter >= max_counter) begin
+            counter = 0;
             tone <= rom_data;
             rom_addr <= rom_addr + 1;
         end
-        else counter <= counter + 1;
+        else counter = counter + 1;
     end
 endmodule
