@@ -46,6 +46,12 @@ module debouncer_testbench();
         //  before the saturating counter saturates, that the output never goes high
         fork
             // This thread will provide the glitchy signal
+            /*begin
+                repeat(100) begin 
+                    #(10); 
+                    $display("%d %d %d", glitchy_signal[0], debounced_signal[0], DUT.pulse_count_out[0]); 
+                end
+            end*/
             begin
                 // Initially act glitchy
                 repeat (10) begin
@@ -74,12 +80,12 @@ module debouncer_testbench();
         // We will use the second glitchy_signal to verify that if a signal bounces around and stays high
         //   long enough for the counter to saturate, that the output goes high and stays there until the glitchy_signal falls
         fork
-            begin
+            /*begin
                 repeat(100) begin 
                     #(10); 
                     $display("%d %d %d", glitchy_signal[1], debounced_signal[1], DUT.pulse_count_out[1]); 
                 end
-            end
+            end*/
             begin
                 // Initially act glitchy
                 repeat (10) begin

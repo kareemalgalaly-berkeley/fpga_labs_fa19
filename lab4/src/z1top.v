@@ -15,11 +15,9 @@ module z1top (
     //assign aud_pwm = 0;
 
     //// TODO: Instantiate the tone_generator and music_streamer here
-    reg tempo_up = 0;
-    reg tempo_down = 0;
+    wire tempo_up, tempo_down, reset;
     reg play_pause = 0;
     reg reverse = 0;
-    reg reset = 0;
     wire [23:0] tone_to_play;
 
     tone_generator tg (
@@ -61,6 +59,12 @@ module z1top (
         .out(buttons_pressed)
     );
 
+    // tempo, reset
+    assign reset = buttons_pressed[0];
+    assign tempo_up   =  SWITCHES[1] & buttons_pressed[1];
+    assign tempo_down = !SWITCHES[1] & buttons_pressed[1];
+
+    // counter
     reg [3:0] count = 0;
     assign LEDS[3:0] = count;
     always @(posedge CLK_125MHZ_FPGA) begin
