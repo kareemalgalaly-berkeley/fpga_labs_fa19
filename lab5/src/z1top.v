@@ -19,7 +19,7 @@ module z1top #(
     input FPGA_SERIAL_RX,
     output FPGA_SERIAL_TX
 );
-    assign LEDS[5:0] = 6'b11_0001;
+    //assign LEDS[5:0] = 6'b11_0001;
     assign aud_sd = 1; // Enable the audio output
 
     wire [3:0] buttons_pressed;
@@ -35,8 +35,36 @@ module z1top #(
         .out(buttons_pressed)
     );
 
-    //// TODO: Instantiate the tone_generator and music_streamer here from lab 4
-    assign aud_pwm = 0; // Comment this out when ready
+    // TODO: Instantiate the tone_generator and music_streamer here from lab 4
+    wire tempo_up, tempo_down, play_pause, reverse;
+    wire [23:0] tone_to_play;
+    assign tempo_up   =  SWITCHES[1] & buttons_pressed[1];
+    assign tempo_down = !SWITCHES[1] & buttons_pressed[1];
+    assign play_pause = buttons_pressed[2];
+    assign reverse    = buttons_pressed[3];
+    assign LEDS[5] = tempo_up || tempo_down;
+    assign LEDS[4] = play_pause || reverse;
+
+    tone_generator tg (
+        .clk(CLK_125MHZ_FPGA),
+        .rst(reset),
+        .output_enable(SWITCHES[0]),
+        .volume(SWITCHES[1]),
+        .tone_switch_period(tone_to_play),
+        .square_wave_out(aud_pwm)
+    );
+
+    music_streamer streamer (
+        .clk(CLK_125MHZ_FPGA),
+        .rst(reset),
+        .tempo_up(tempo_up),
+        .tempo_down(tempo_down),
+        .play_pause(play_pause),
+        .reverse(reverse),
+        .leds(LEDS[2:0]),
+        .tone(tone_to_play)
+    );
+    // end streamer setup
 
     reg [7:0] data_in;
     wire [7:0] data_out;

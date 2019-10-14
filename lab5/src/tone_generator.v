@@ -14,6 +14,7 @@ module tone_generator (
     assign square_wave_out = square_out && pwm_out;
 
     always @(posedge clk) begin
+        if (rst) counter[23:0] = tone_switch_period;
         // square wave generator
         if (counter <= 32'h0000_0001) begin
             if (output_enable == 1'b1) begin
@@ -23,11 +24,11 @@ module tone_generator (
             end
             //A
             //counter <= 32'h0000_0001;
-            counter[23:0] <= tone_switch_period;
+            counter[23:0] = tone_switch_period;
             //counter <= 284091;
         end else begin
             //counter <= counter + 1;
-            counter <= counter - 1;
+            counter = counter - 1;
         end
         // volume duty cycle
         if (volume == 1) begin

@@ -31,13 +31,13 @@ module debouncer #(
     genvar i;
     generate
         for (i = 0; i < width; i = i+1) begin: LOOP
-            reg [saturating_counter_width:0] pulse_count = 0;
+            reg [saturating_counter_width-1:0] pulse_count = 0;
             assign pulse_count_out[i] = pulse_count;
             always @(posedge clk) begin
-                if (glitchy_signal[i] == 0) begin pulse_count <= 2; debounced_signal[i] <= 0; end //rst
+                if (glitchy_signal[i] == 0) begin pulse_count <= 1; debounced_signal[i] <= 0; end //rst
                 else begin
                     if (sample_pulse) begin
-                        if (pulse_count >= pulse_count_max) debounced_signal[i] <= 1;
+                        if (pulse_count > pulse_count_max) debounced_signal[i] <= 1;
                         else pulse_count <= pulse_count + 1;
                     end
                 end

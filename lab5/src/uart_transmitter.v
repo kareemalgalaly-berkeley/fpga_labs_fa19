@@ -16,8 +16,9 @@ module uart_transmitter #(
     localparam  CLOCK_COUNTER_WIDTH =   $clog2(SYMBOL_EDGE_TIME);
 
     // Initializations
-    reg [CLOCK_COUNTER_WIDTH-1:0] clock_counter;
+    reg [CLOCK_COUNTER_WIDTH-1:0] clock_counter = 0;
     reg transmit_clock = 0;
+    reg [8:0] data_in_hold;
     wire busy;
 
     reg [9:0] shift_reg = 10'b1111111111;
@@ -37,13 +38,15 @@ module uart_transmitter #(
             clock_counter <= clock_counter - 1;
             transmit_clock <= 1'b0; // negedge
         end
+        if (data_in_valid) data_in_hold = {1'b1, data_in};
+        else if (busy) data_in_hold[8] = 1'b0;
     end
 
     // transmission
     always @(posedge transmit_clock) begin
         // prepare to send
-        if data_in_valid && !busy begin
-            shift_reg <= {1'b1, data_in, 0'b0}
+        if (data_in_hold[8] && !busy) begin
+            shift_reg <= {1'b1, data_in_hold[7:0], 1'b0};
             bits_remaining <= 4'd10;
         end else begin
             // shift away

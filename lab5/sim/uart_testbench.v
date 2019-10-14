@@ -83,6 +83,7 @@ module uart_testbench();
         fork
             begin
                 // Wait until the off_chip_uart's transmitter is ready
+                $display("first wait");
                 while (data_in_ready == 1'b0) @(posedge clk); #1;
 
                 // Send a character to the off chip UART's transmitter to transmit over the serial line
@@ -94,6 +95,7 @@ module uart_testbench();
                 // Now, the transmitter should be sending the data_in over the FPGA_SERIAL_TX line to the on chip UART
 
                 // We wait until the on chip UART's receiver indicates that is has valid data it has received
+                $display("second wait");
                 while (data_out_valid == 1'b0) @(posedge clk); #1;
 
                 // Now, data_out of the on chip UART should contain the data that was sent to it by the off chip UART
@@ -101,6 +103,7 @@ module uart_testbench();
                     $display("Failure 1: on chip UART got data: %h, but expected: %h", data_out, 8'h21);
                 end
 
+                $display("minipause");
                 // If we wait a few more clock cycles, the data should still be held by the receiver
                 repeat (10) @(posedge clk); #1;
                 if (data_out !== 8'h21) begin
@@ -112,6 +115,7 @@ module uart_testbench();
                     $display("Failure 3: FPGA_SERIAL_TX was not high when the off chip UART's transmitter should be idle");
                 end
 
+                $display("minipause2");
                 // Now, if we assert data_out_ready to the on chip UART's receiver, it should pull its data_out_valid signal low
                 data_out_ready = 1'b1;
                 @(posedge clk); #1;
@@ -120,7 +124,19 @@ module uart_testbench();
                 if (data_out_valid == 1'b1) begin
                     $display("Failure 4: on chip UART didn't clear data_out_valid when data_out_ready was asserted");
                 end
+
+                while (data_in_ready == 1'b0) @(posedge clk); #1;
+                data_in = 8'haf;
+                data_in_valid = 1'b1;
+                @(posedge clk); #1;
+                data_in_valid = 1'b0;
+                while (data_in_ready == 1'b0) @(posedge clk); #1;
+                data_in = 8'hbc;
+                data_in_valid = 1'b1;
+                @(posedge clk); #1;
+                data_in_valid = 1'b0;
                 done = 1;
+
             end
             begin
                 repeat (25000) @(posedge clk);

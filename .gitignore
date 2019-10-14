@@ -21,3 +21,6 @@ build
 *.tb
 output.txt
 *.cloud
+*.wav
+*.key
+*.gz
