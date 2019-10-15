@@ -69,6 +69,7 @@ module uart_testbench();
         `ifndef IVERILOG
             $vcdpluson;
         `endif
+        $display(" \n\n-------------------------------------- \n\n");
         reset = 1'b0;
         data_in = 8'd0;
         data_in_valid = 1'b0;
@@ -83,7 +84,6 @@ module uart_testbench();
         fork
             begin
                 // Wait until the off_chip_uart's transmitter is ready
-                $display("first wait");
                 while (data_in_ready == 1'b0) @(posedge clk); #1;
 
                 // Send a character to the off chip UART's transmitter to transmit over the serial line
@@ -95,7 +95,6 @@ module uart_testbench();
                 // Now, the transmitter should be sending the data_in over the FPGA_SERIAL_TX line to the on chip UART
 
                 // We wait until the on chip UART's receiver indicates that is has valid data it has received
-                $display("second wait");
                 while (data_out_valid == 1'b0) @(posedge clk); #1;
 
                 // Now, data_out of the on chip UART should contain the data that was sent to it by the off chip UART
@@ -124,22 +123,53 @@ module uart_testbench();
                 if (data_out_valid == 1'b1) begin
                     $display("Failure 4: on chip UART didn't clear data_out_valid when data_out_ready was asserted");
                 end
-
-                while (data_in_ready == 1'b0) @(posedge clk); #1;
-                data_in = 8'haf;
-                data_in_valid = 1'b1;
-                @(posedge clk); #1;
-                data_in_valid = 1'b0;
-                while (data_in_ready == 1'b0) @(posedge clk); #1;
-                data_in = 8'hbc;
-                data_in_valid = 1'b1;
-                @(posedge clk); #1;
-                data_in_valid = 1'b0;
                 done = 1;
 
             end
             begin
                 repeat (25000) @(posedge clk);
+                if (!done) begin
+                    $display("Failure: timing out");
+                    $finish();
+                end
+            end
+        join
+        done = 0;
+        @(posedge clk); #100;
+        $display("part 2");
+        fork
+            begin
+                $display("wait 1");
+                while (data_in_ready == 1'b0) @(posedge clk); #1;
+                data_in = 8'haf;
+                data_in_valid = 1'b1;
+                @(posedge clk); #1;
+                data_in_valid = 1'b0;
+    
+                while (data_in_ready == 1'b0) @(posedge clk); #1;
+                $display("PREP SEND SECOND");
+                data_in = 8'hbc;
+                data_in_valid = 1'b1;
+                @(posedge clk); #1;
+                data_in_valid = 1'b0;
+                $display("set done");
+                done = 1;
+            end
+            begin 
+                data_out_ready = 1; // listen
+
+                while (data_out_valid == 1'b0) @(posedge clk); #1;
+                $display("FIRST RECIEVED, %h", data_out);
+                if (data_out !== 8'haf) 
+                    $display("Failure 1: on chip UART got data: %h, but expected: %h", data_out, 8'haf);
+
+                while (data_out_valid == 1'b0) @(posedge clk); #1;
+                $display("SECOND RECIEVED, %h", data_out);
+                if (data_out !== 8'hbc) 
+                    $display("Failure 1: on chip UART got data: %h, but expected: %h", data_out, 8'hbc);
+            end
+            begin 
+                repeat (25000) @(posedge clk); 
                 if (!done) begin
                     $display("Failure: timing out");
                     $finish();

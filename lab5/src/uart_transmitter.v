@@ -18,14 +18,14 @@ module uart_transmitter #(
     // Initializations
     reg [CLOCK_COUNTER_WIDTH-1:0] clock_counter = 0;
     reg transmit_clock = 0;
-    reg [8:0] data_in_hold;
+    reg [8:0] data_in_hold = 0;
     wire busy;
 
     reg [9:0] shift_reg = 10'b1111111111;
     reg [3:0] bits_remaining = 0;
 
     // Wires
-    assign data_in_ready = !busy;
+    assign data_in_ready = !busy && (data_in_hold[8] == 0);
     assign busy = |bits_remaining;
     assign serial_out = shift_reg[0];
 
@@ -38,20 +38,20 @@ module uart_transmitter #(
             clock_counter <= clock_counter - 1;
             transmit_clock <= 1'b0; // negedge
         end
-        if (data_in_valid) data_in_hold = {1'b1, data_in};
+        if (data_in_valid && data_in_ready) data_in_hold = {1'b1, data_in};
         else if (busy) data_in_hold[8] = 1'b0;
     end
 
     // transmission
     always @(posedge transmit_clock) begin
         // prepare to send
-        if (data_in_hold[8] && !busy) begin
+        if (data_in_hold[8]) begin
             shift_reg <= {1'b1, data_in_hold[7:0], 1'b0};
             bits_remaining <= 4'd10;
         end else begin
             // shift away
             shift_reg <= {1'b1, shift_reg[9:1]}; // shift (pad with 1)
-            bits_remaining <= (bits_remaining - 1) && busy; // min_clamp@0
+            bits_remaining <= (bits_remaining - 1) & {4{busy}}; // min_clamp@0
         end
     end
 
