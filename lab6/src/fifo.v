@@ -3,7 +3,8 @@ module fifo #(
     parameter fifo_depth = 32,
     parameter addr_width = $clog2(fifo_depth)
 ) (
-    input clk, rst,
+    input clk, 
+    input rst,
 
     // Write side
     input wr_en,
@@ -15,44 +16,38 @@ module fifo #(
     output reg [data_width-1:0] dout,
     output empty
 );
-    //assign full = 1'b1;
-    //assign empty = 1'b0;
-    //assign dout = 0;
-
     // Initialization
     reg [addr_width-1:0] write_pointer = 0;
     reg [addr_width-1:0] read_pointer = 0; 
     reg [data_width-1:0] data [fifo_depth-1:0];
 
-    reg _full = 0;
+    wire [addr_width-1:0] next_write;
+    wire [addr_width-1:0] next_read;
+    assign next_write = write_pointer + 1;
+    assign next_read = read_pointer + 1;
 
-    // Always
-    //assign dout = data[read_pointer];
-    assign full = _full;
-    assign empty = (write_pointer == read_pointer) && !(full);
+    reg _empty = 1;
 
-    always @(posedge clk) 
+    assign full =  (write_pointer == read_pointer) && !(_empty);
+    assign empty = (write_pointer == read_pointer) && _empty; 
+
+    // Everything block
+    integer i;
+    always @(posedge clk) begin
         if (rst) begin
-            genvar i;
-            generate
-                for (i = 0; i < fifo_depth; i = i + 1) begin : genreset
-                    data[i] = addr_width'b0;
-                end
-            endgenerate
+            for (i=0; i<fifo_depth; i=i+1) data[i] <= {data_width{1'b0}};
+            _empty <= 1'b1;
         end else begin
-            // main
             if (wr_en && !full) begin
-                write_pointer <= write_pointer + 1;
                 data[write_pointer] <= din;
-                if ((write_pointer + 1) == read_pointer) _full <= 1'b1;
-                else _full <= 1'b0;
-            end else if (rd_en && !empty) begin
-                read_pointer <= read_pointer + 1;
+                write_pointer <= next_write;
+                if (next_write == read_pointer) _empty = 1'b0;
+            end /*else*/ if (rd_en && !empty) begin
                 dout <= data[read_pointer];
-                _full <= 1'b0;
+                read_pointer <= next_read;
+                if (next_read == write_pointer) _empty <= 1'b1;
             end
         end
     end
-
-
 endmodule
+

@@ -3,6 +3,7 @@
 `define CLK_PERIOD 8
 `define DATA_WIDTH 32
 `define FIFO_DEPTH 8
+`define IVERILOG
 
 module fifo_testbench();
     reg clk = 0;
@@ -88,6 +89,27 @@ module fifo_testbench();
         end
     endtask
 
+    // This task will read some data from the FIFO through the read interface
+    // violate_interface does the same as for the write_to_fifo task
+    task rw_from_fifo;
+        input violate_interface;
+        input [`DATA_WIDTH-1:0] write_data;
+        output [`DATA_WIDTH-1:0] read_data;
+        begin
+            if (!violate_interface && empty) rd_en <= 1'b0;
+            else rd_en <= 1'b1;
+            if (!violate_interface && full) wr_en <= 1'b0;
+            else begin wr_en <= 1'b1; din <= write_data; end
+            // Wait for the clock edge to get the read data
+            @(posedge clk);
+            #1;
+
+            read_data = dout;
+            rd_en <= 1'b0;
+            wr_en <= 1'b0;
+        end
+    endtask
+
     integer i;
     initial begin: TB
         `ifndef IVERILOG
@@ -121,15 +143,16 @@ module fifo_testbench();
         @(posedge clk);
 
         // Begin pushing data into the FIFO with a 1 cycle delay in between each write operation
+
         for (i = 0; i < `FIFO_DEPTH - 1; i = i + 1) begin
             write_to_fifo(test_values[i], 1'b0);
 
             // Perform checks on empty, full (disable check on empty for async FIFO due to synchronization delay)
             if (empty === 1'b1) begin
-                $display("Failure: While being filled, FIFO said it was empty");
+                $display("Failure: While being filled, FIFO said it was empty %d", i);
             end
             if (full === 1'b1) begin
-                $display("Failure: While being filled, FIFO was full before all entries were written");
+                $display("Failure: While being filled, FIFO was full before all entries were written %d", i);
             end
 
             // Insert single-cycle delay between each write
@@ -202,6 +225,31 @@ module fifo_testbench();
         // Nothing should change, perform the same checks on full and empty
         if (full !== 1'b0 || empty !== 1'b1) begin
             $display("Failure: Empty FIFO wasn't empty or full went high when trying to read. full = %b, empty = %b", full, empty);
+        end
+
+        /* ------------- MY TESTS ------------- */
+        // TEST 1 : readwrite same cycle
+        // @empty should only write
+        rw_from_fifo(1'b0, 5, received_values[0]);
+        if (empty == 1'b1) $display("ERROR : FIFO empty on rw from empty");
+        if (full == 1'b1) $display("ERROR : FIFO full on rw from empty");
+        // @notempty should do both
+        rw_from_fifo(1'b0, 7, received_values[0]);
+        if (empty == 1'b1) $display("ERROR : FIFO empty on rw from single");
+        if (full == 1'b1) $display("ERROR : FIFO full on rw from single ");
+        if (received_values[0] != 5) $display("ERROR : wrong value read from FIFO (single)");
+        // fill fifo
+        for (i = 1; i < `FIFO_DEPTH; i = i + 1) begin
+            write_to_fifo(test_values[i], 1'b0);
+        end
+        if (full == 1'b0) $display("FIFO should be full");
+        // should be full and not write
+        // rw should not write
+        rw_from_fifo(1'b0, 79, received_values[0]);
+        if (received_values[0] != 7) $display("rw corrupted write when full");
+        for (i = 1; i < `FIFO_DEPTH - 1; i = i + 1) begin
+            read_from_fifo(1'b0, received_values[i]);
+            if (received_values[i] != test_values[i]) $display("FIFO being bad");
         end
 
         // SUCCESS! Print out some debug info.
