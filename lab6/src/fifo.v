@@ -14,6 +14,7 @@ module fifo #(
     // Read side
     input rd_en,
     output reg [data_width-1:0] dout,
+    //output [data_width-1:0] dout,
     output empty
 );
     // Initialization
