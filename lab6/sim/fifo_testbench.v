@@ -3,7 +3,7 @@
 `define CLK_PERIOD 8
 `define DATA_WIDTH 32
 `define FIFO_DEPTH 8
-`define IVERILOG
+//`define IVERILOG
 
 module fifo_testbench();
     reg clk = 0;
