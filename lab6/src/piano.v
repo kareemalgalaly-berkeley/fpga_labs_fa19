@@ -99,10 +99,6 @@ module piano #(
             transmit_data_ready <= 1'b0;
         end else ua_tx_wr_en <= 0;
 
-    output [7:0] ua_tx_din,
-    output ua_tx_wr_en,
-        end
-
         if (ua_rx_valid) begin
             // read
             ua_rx_ready <= 1'b0;
