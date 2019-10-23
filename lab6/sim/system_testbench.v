@@ -11,6 +11,8 @@
 `define INITIAL_NOTELEN 100_000 // so reception is visible
 `define NUMSEND 8
 
+//`define VARIABLE_LENGTH
+
 //`define INITIAL_NOTELEN 100_000 // BACKPRESSURE SETTINGS
 //`define BAUD_RATE 115_200_0
 //`define NUMSEND 36
@@ -119,8 +121,8 @@ module system_testbench();
         reset = 1'b0;
 
         done = 1'b0;
-
-        /* // FIXED LENGTH TEST 
+`ifndef VARIABLE_LENGTH
+        // FIXED LENGTH TEST 
 
         $display("data to send");
         for (i = 0; i < `NUMSEND; i=i+1) $display("%d : %h", i, test_values[i]);
@@ -161,25 +163,33 @@ module system_testbench();
                 end
             end
         join
-        */
-
-        uart_transmit(8'h80);
-        uart_transmit(8'ha2);
-        @(posedge leds[5]);
-        $display("TRIPPED ON");
-        uart_transmit(8'h81);
-        uart_transmit(8'ha2);
-        @(negedge leds[5]);
-        $display("TRIPPED OFF");
-        uart_transmit(8'h80);
-        uart_transmit(8'ha2);
-        @(posedge leds[5]);
-        $display("TRIPPED ON");
-        uart_transmit(8'h81);
-        uart_transmit(8'h00);
-        @(negedge leds[5]);
-        $display("TRIPPED OFF :: SHOULD NOT HAPPEN");
-
+`endif
+`ifdef VARIABLE_LENGTH
+        fork 
+            begin
+                uart_transmit(8'h80);
+                uart_transmit(8'ha2);
+                @(posedge leds[5]);
+                $display("TRIPPED ON");
+                uart_transmit(8'h81);
+                uart_transmit(8'ha2);
+                @(negedge leds[5]);
+                $display("TRIPPED OFF");
+                uart_transmit(8'h80);
+                uart_transmit(8'ha2);
+                @(posedge leds[5]);
+                $display("TRIPPED ON");
+                uart_transmit(8'h81);
+                uart_transmit(8'h00);
+                @(negedge leds[5]);
+                $display("ERROR TRIPPED OFF :: SHOULD NOT HAPPEN");
+            end
+            begin
+                repeat (1000000) @(posedge clk); #1; 
+                $finish();
+            end
+        join
+`endif
 
         // TODO: Add some more stuff to test the piano
         `ifndef IVERILOG
