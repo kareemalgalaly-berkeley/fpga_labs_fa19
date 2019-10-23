@@ -17,14 +17,9 @@ module piano #(
     input ua_rx_empty, 
     output reg ua_rx_rd_en = 1'b0,
 
-    output reg [23:0] tone = 24'b0
+    output [23:0] tone
     //output volume
 );
-    //assign tone = 'd0;
-    //assign volume = 'd0;
-    //assign ua_tx_din = 0;
-    //assign ua_tx_wr_en = 0;
-    //assign ua_rx_rd_en = 0;
 
     // CLOCKGEN Variables
     localparam NOTELEN_ADJUST  = CLOCK_FREQ / 20;
@@ -36,7 +31,9 @@ module piano #(
     assign note_clk = (note_counter == note_len);
     
     // FIFOTONE Variables
-    reg [2:0] fifo_state;
+    reg [7:0] curr_char = 8'b0;
+    reg curr_pressed = 1'b0;
+    reg reading_id = 1'b0;
 
     // ROM Initialization
     reg [7:0] rom_addr = 0;
@@ -44,101 +41,119 @@ module piano #(
     wire [7:0] rom_laddr;
     piano_scale_rom rom(rom_addr, rom_data, rom_laddr);
 
-    // always 
-    
-    /*// note_clock generator 
-    always @(posedge clk) begin
-        //if (rst) begin
-        //    note_counter <= 1'b0;
-        //    note_clk;
-        //end else begin
-        if (note_counter == note_len || rst) begin
-            note_counter <= 0;
-            note_clk <= ~rst;
-        else begin
-            note_counter <= note_counter + 1;
-            note_clk <= 1'b0;
-        end
-        //end
-    end*/
-
-    //// note_len adjuster, and tone output
-    // main
-    always @(posedge clk) begin
-        ///// BACKGROUND TASKS ///// 
-        
-        // adjust note_len
-        casez ({rst, buttons[0], switches[0]})
-            3'b1?? : note_len <= INITIAL_NOTELEN; // reset
-            3'b011 : note_len <= INITIAL_NOTELEN + NOTELEN_ADJUST; // increase
-            3'b010 : note_len <= INITIAL_NOTELEN - NOTELEN_ADJUST; // decrease
-            default : note_len <= note_len;
-        endcase
-        
-        // adjust note_counter
-        if (note_clk || rst) note_counter <= 0;
-        else note_counter <= note_counter + 1;
-
-        ///// FIFO TASKS ///// // one more if and split into case
-        if (rst || (note_clk && fifo_state == 3'b000)) begin
-            // can trip asynchronously so reset all fifo signals here
-            // normal function
-            tone <= (rst) ? 24'b0 : rom_data;
-            ua_rx_rd_en <= 1'b0;
-            ua_tx_wr_en <= 1'b0;
-            fifo_state  <= 3'b001;
-        end else begin
-            if (note_clk) begin tone <= 24'b0; rom_addr <= 8'b0; end // stall
-            else case (fifo_state) 
-                //fifo_state = 2'b00 < nothing, 2'b01 < look to read, 2'b11 < reading, 2'b10 look to write
-                3'b001 : if (!ua_rx_empty) begin // wait until data arrive
-                            ua_rx_rd_en <= 1'b1;
-                            fifo_state  <= 3'b011;
-                        end
-                3'b011 : begin // data neady next cycle
-                            ua_rx_rd_en <= 1'b0;
-                            fifo_state <= 3'b010;
-                        end
-                3'b010 : begin // data here
-                            rom_addr <= ua_rx_dout;
-                            fifo_state  <= 3'b110;
-                        end
-                3'b110 : if (!ua_tx_full) begin // wait until next fifo ready
-                            ua_tx_din <= rom_addr;
-                            ua_tx_wr_en <= 1'b1;
-                            fifo_state  <= 3'b000;
-                        end
-                default : begin
-                            ua_tx_wr_en <= 1'b0;
-                            fifo_state <= 3'b000;
-                        end
+    // FIXED LENGTH
+    /*
+    reg [2:0] fifo_state;
+    reg [23:0] tone_fixed = 24'b0;
+    assign tone = tone_fixed;
+        // main
+        always @(posedge clk) begin
+            ///// BACKGROUND TASKS ///// 
+            
+            // adjust note_len
+            casez ({rst, buttons[0], switches[0]})
+                3'b1?? : note_len <= INITIAL_NOTELEN; // reset
+                3'b011 : note_len <= INITIAL_NOTELEN + NOTELEN_ADJUST; // increase
+                3'b010 : note_len <= INITIAL_NOTELEN - NOTELEN_ADJUST; // decrease
+                default : note_len <= note_len;
             endcase
+            
+            // adjust note_counter
+            if (note_clk || rst) note_counter <= 0;
+            else note_counter <= note_counter + 1;
+
+            ///// FIFO TASKS ///// // one more if and split into case
+            if (rst || (note_clk && fifo_state == 3'b000)) begin
+                // can trip asynchronously so reset all fifo signals here
+                // normal function
+                tone_fixed <= (rst) ? 24'b0 : rom_data;
+                ua_rx_rd_en <= 1'b0;
+                ua_tx_wr_en <= 1'b0;
+                fifo_state  <= 3'b001;
+            end else begin
+                if (note_clk) begin tone_fixed <= 24'b0; rom_addr <= 8'b0; end // stall
+                else case (fifo_state) 
+                    //fifo_state = 2'b00 < nothing, 2'b01 < look to read, 2'b11 < reading, 2'b10 look to write
+                    3'b001 : if (!ua_rx_empty) begin // wait until data arrive
+                                ua_rx_rd_en <= 1'b1;
+                                fifo_state  <= 3'b011;
+                            end
+                    3'b011 : begin // data neady next cycle
+                                ua_rx_rd_en <= 1'b0;
+                                fifo_state <= 3'b010;
+                            end
+                    3'b010 : begin // data here
+                                rom_addr <= ua_rx_dout;
+                                fifo_state  <= 3'b110;
+                            end
+                    3'b110 : if (!ua_tx_full) begin // wait until next fifo ready
+                                ua_tx_din <= rom_addr;
+                                ua_tx_wr_en <= 1'b1;
+                                fifo_state  <= 3'b000;
+                            end
+                    default : begin
+                                ua_tx_wr_en <= 1'b0;
+                                fifo_state <= 3'b000;
+                            end
+                endcase
+            end
         end
+    */
 
-        //if (note_clk) begin
-        //    tone <= rom_data;
-        //    fifo_await_data <= 1'b1;
-        //    fifo_data_recieved <= 0'b1;
-        //    ua_rx_ready <= 1'b1; // trigger fetch
-        //end
+    // ADJUSTABLE LENGTH
+    reg [3:0] fifo_state = 0;
+    assign tone = (curr_pressed) ? rom_data : 24'b0;
+    assign leds[5] = curr_pressed;
 
-        //if (!ua_rx_empty && await_data) begin
-        //    fifo_await_data <= 1'b0;
-        //    ua_rx_rd_en <= 1'b1;
-        //end
-
-        //if (ua_rx_rd_en) begin
-        //    rom_addr <= ua_rx_dout;
-        //    ua_rx_rd_en <= 1'b0;
-        //    fifo_data_recieved <= 1'b1;
-        //end
-
-        //if (data_recieved && !ua_tx_full) begin
-        //    ua_tx_din <= rom_addr;
-        //    ua_tx_wr_en <= 1'b1;
-        //    fifo_data_recieved <= 1'b0;
-        //end
-
+    always @(posedge clk) begin
+        //reg curr_pressed = 1'b0;
+        //reg reading_id = 1'b0;
+        //state
+        case (fifo_state) 
+            4'b0000 : // waiting for id keypress
+                      if (!ua_rx_empty) begin
+                        ua_rx_rd_en <= 1'b1;
+                        fifo_state  <= 4'b0001;
+                      end
+            4'b0001 : begin // id ready next cycle
+                        ua_rx_rd_en <= 1'b0;
+                        fifo_state <= 4'b0011;
+                      end
+            4'b0011 : begin // id data here
+                        if (ua_rx_dout == 8'h81) fifo_state <= 3'b1010; //1 means released
+                        else fifo_state <= 4'b0010; //0 means pressed
+                      end
+            4'b0010 : // waiting for char keypress (PRESS MODE)
+                      if (!ua_rx_empty) begin
+                        ua_rx_rd_en <= 1'b1;
+                        fifo_state  <= 4'b0110;
+                      end
+            4'b0110 : begin // char ready next cycle
+                        ua_rx_rd_en <= 1'b0;
+                        fifo_state <= 4'b0111;
+                      end
+            4'b0111 : begin // char data here
+                        if (!curr_pressed) begin 
+                            rom_addr <= ua_rx_dout;
+                            curr_pressed <= 1'b1;
+                        end
+                        fifo_state <= 4'b0000;
+                      end
+            4'b1010 : // waiting for char keypress (RELEASE MODE)
+                      if (!ua_rx_empty) begin
+                        ua_rx_rd_en <= 1'b1;
+                        fifo_state  <= 4'b1110;
+                      end
+            4'b1110 : begin // char ready next cycle
+                        ua_rx_rd_en <= 1'b0;
+                        fifo_state <= 4'b1111;
+                      end
+            4'b1111 : begin // char data here
+                        if (curr_pressed && (rom_addr == ua_rx_dout)) curr_pressed <= 0'b1;
+                        fifo_state <= 4'b0000;
+                      end
+            default : fifo_state <= 4'b0000;
+        endcase
     end
 
 endmodule
