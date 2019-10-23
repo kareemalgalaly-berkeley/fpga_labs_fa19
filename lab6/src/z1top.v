@@ -2,6 +2,7 @@
 
 module z1top #(
     parameter CLOCK_FREQ = 125_000_000,
+    parameter INITIAL_NOTELEN = CLOCK_FREQ/5,
     parameter BAUD_RATE = 115_200,
     /* verilator lint_off REALCVT */
     // Sample the button signal every 500us
@@ -33,10 +34,9 @@ module z1top #(
         .out({buttons_pressed, reset})
     );
 
-    reg [7:0] data_in;
-    wire [7:0] data_out;
-    wire data_out_valid, data_out_ready;
-    reg data_in_valid, data_in_ready; 
+    wire [7:0] data_out, data_in;
+    wire data_out_valid, data_out_ready, data_in_ready;
+    reg data_in_valid; 
 
     // This UART is on the FPGA and communicates with your desktop
     // using the FPGA_SERIAL_TX, and FPGA_SERIAL_RX signals. The ready/valid
@@ -60,11 +60,10 @@ module z1top #(
     // WIRES
     wire [23:0] tone_to_play;
     wire tx_empty, tx_wr_en, tx_full;
-    wire rx_empty, rx_full;
+    wire rx_empty, rx_rd_en, rx_full;
     assign data_out_ready = !rx_full;
     reg tx_rd_en;
     wire [7:0] tx_din, rx_dout;
-    //assign data_in_ready = !tx_empty;
 
     always @(posedge CLK_125MHZ_FPGA) begin
         tx_rd_en <= !tx_empty && data_in_ready;
@@ -96,12 +95,12 @@ module z1top #(
     );
 
     // PIANO
-    piano #(CLOCK_FREQ) pi (
+    piano #(CLOCK_FREQ, INITIAL_NOTELEN) pi (
         .clk(CLK_125MHZ_FPGA),
         .rst(reset),
-        .buttons(buttons),
-        .switches(switches),
-        .leds(leds),
+        .buttons(buttons_pressed),
+        .switches(SWITCHES),
+        .leds(LEDS),
         .ua_tx_din(tx_din),
         .ua_tx_wr_en(tx_wr_en),
         .ua_tx_full(tx_full),
@@ -115,9 +114,9 @@ module z1top #(
     tone_generator tgen(
         .clk(CLK_125MHZ_FPGA),
         .rst(reset),
-        .output_enable(switches[0]),
+        .output_enable(SWITCHES[0]),
         .tone_switch_period(tone_to_play),
-        .volume(switches[1]),
+        .volume(SWITCHES[1]),
         .square_wave_out(aud_pwm)
     );
 

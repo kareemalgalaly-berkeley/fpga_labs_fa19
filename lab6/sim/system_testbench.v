@@ -8,15 +8,22 @@
 
 `define CLOCK_FREQ 125_000_000
 `define BAUD_RATE 115_200
+`define INITIAL_NOTELEN 100_000 // so reception is visible
+`define NUMSEND 8
+
+//`define INITIAL_NOTELEN 100_000 // BACKPRESSURE SETTINGS
+//`define BAUD_RATE 115_200_0
+//`define NUMSEND 36
+
 
 module system_testbench();
     reg clk = 0;
     wire audio_pwm;
     wire [5:0] leds;
-    reg [2:0] buttons;
-    reg [1:0] switches;
-    reg reset;
-    reg done;
+    reg [2:0] buttons = 0;
+    reg [1:0] switches = 0;
+    reg reset = 0;
+    reg done = 0;
 
     wire FPGA_SERIAL_RX, FPGA_SERIAL_TX;
 
@@ -27,7 +34,8 @@ module system_testbench();
         .B_SAMPLE_COUNT_MAX(`B_SAMPLE_COUNT_MAX),
         .B_PULSE_COUNT_MAX(`B_PULSE_COUNT_MAX),
         .CLOCK_FREQ(`CLOCK_FREQ),
-        .BAUD_RATE(`BAUD_RATE)
+        .BAUD_RATE(`BAUD_RATE),
+        .INITIAL_NOTELEN(`INITIAL_NOTELEN)
     ) top (
         .CLK_125MHZ_FPGA(clk),
         .BUTTONS({buttons, reset}),
@@ -43,7 +51,7 @@ module system_testbench();
     
     // The off-chip UART (on your desktop/workstation computer)
     reg data_in_valid;
-    wire data_in_ready, data_out_valid, data_out_ready;
+    wire data_in_ready, data_out_valid; //, data_out_ready;
     reg [7:0] data_in;
     wire [7:0] data_out;
     uart # (
@@ -57,10 +65,15 @@ module system_testbench();
         .data_in_ready(data_in_ready),
         .data_out(data_out),
         .data_out_valid(data_out_valid),
-        .data_out_ready(data_out_ready),
+        .data_out_ready(1'b1),
         .serial_in(FPGA_SERIAL_TX), // Note these serial connections are the opposite of the connections to z1top
         .serial_out(FPGA_SERIAL_RX)
     );
+
+    // TEST VARS
+    reg [7:0] test_values[`NUMSEND:0];
+    reg [7:0] received_values[`NUMSEND:0];
+    
 
     // tasks
     task uart_transmit;
@@ -81,7 +94,10 @@ module system_testbench();
 
     // tests
 
+    integer i, j;
     initial begin
+        $display("\n ----------- STARTING ----------- \n");
+
         `ifndef IVERILOG
             $vcdpluson;
         `endif
@@ -89,6 +105,12 @@ module system_testbench();
             $dumpfile("system_testbench.fst");
             $dumpvars(0,system_testbench);
         `endif
+        
+        // Populate test values
+        for (i = 0; i < `NUMSEND; i = i + 1) begin
+            test_values[i] <= $urandom;
+        end
+
         // Simulate pushing the reset button and holding it for a while
         reset = 1'b0;
         repeat (50) @(posedge clk); #1;
@@ -99,33 +121,41 @@ module system_testbench();
         // Send a few characters through the off_chip_uart
         done = 0;
 
+        $display("data to send");
+        for (i = 0; i < `NUMSEND; i=i+1) $display("%d : %h", i, test_values[i]);
+
+        $display("commence transmission");
         fork
             begin // transmit
-                uart_transmit(8'h5a);
-                $display("sent");
-                repeat (10) begin
-                    @(posedge clk);
-                    $display("%b", FPGA_SERIAL_RX);
+                for (i = 0; i < `NUMSEND; i=i+1) begin
+                    uart_transmit(test_values[i]); $display("%d : sent %h", i, test_values[i]);
                 end
             end
 
             begin // recieve
-                uart_recieve();
-                $display("recieved");
-                if (data_out != 8'h5a) $display("ERROR, did not recieve what was sent %h", data_out);
+                for (j = 0; j < `NUMSEND; j=j+1) begin
+                    uart_recieve();
+                    received_values[j] = data_out;
+                    $display("\t%d recieved %h", j, data_out);
+                    if (data_out !== test_values[j]) 
+                        $display("\t\tERROR, got: %h expected: %h", data_out, test_values[j]);
+                end
                 done = 1;
             end
 
             begin // timeout check
-                repeat (50000) begin 
+                repeat (100000) begin 
                     repeat (50) @(posedge clk);
                     if (done) begin
-                        $display("---------------DONE--------------");
+                        $display("\n ----------- DONE ----------- \n");
                         $finish();
                     end
                 end
+                //repeat (1250000) @(posedge clk); #1; 
+                $display("a thing");
                 if (!done) begin
-                    $display("Failure: timing out");
+                    $display("asdf Failure: timing out");
+                    $display(" ----------- DONE ----------- \n");
                     $finish();
                 end
             end

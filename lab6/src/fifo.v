@@ -31,18 +31,21 @@ module fifo #(
 
     assign full =  (write_pointer == read_pointer) && !(_empty);
     assign empty = (write_pointer == read_pointer) && _empty; 
+    //assign dout = data[read_pointer];
 
     // Everything block
     integer i;
     always @(posedge clk) begin
         if (rst) begin
             for (i=0; i<fifo_depth; i=i+1) data[i] <= {data_width{1'b0}};
+            write_pointer <= {addr_width{1'b0}};
+            read_pointer <= {addr_width{1'b0}};
             _empty <= 1'b1;
         end else begin
             if (wr_en && !full) begin
                 data[write_pointer] <= din;
                 write_pointer <= next_write;
-                if (next_write == read_pointer) _empty = 1'b0;
+                if (next_write == read_pointer) _empty <= 1'b0;
             end /*else*/ if (rd_en && !empty) begin
                 dout <= data[read_pointer];
                 read_pointer <= next_read;
