@@ -11,7 +11,7 @@
 `define INITIAL_NOTELEN 100_000 // so reception is visible
 `define NUMSEND 8
 
-//`define VARIABLE_LENGTH
+`define VARIABLE_LENGTH
 
 //`define INITIAL_NOTELEN 100_000 // BACKPRESSURE SETTINGS
 //`define BAUD_RATE 115_200_0

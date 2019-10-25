@@ -1,4 +1,4 @@
-//`define VARIABLE_LENGTH
+`define VARIABLE_LENGTH
 
 module piano #(
     parameter CLOCK_FREQ = 125_000_000,
